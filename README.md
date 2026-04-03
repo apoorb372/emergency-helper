@@ -12,7 +12,7 @@ AI Emergency Helper is a smart web-based application designed to assist users du
 - 📍 Future scope: location sharing & smart calling
 
 ## 🌍 Live Demo
-https://username.apoorb372.io/emergency-helper/
+https://apoorb372.github.io/emergency-helper/
 
 ## 💡 Purpose
 This project aims to provide quick and intelligent help during critical situations and improve safety using technology.
