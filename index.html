@@ -1,229 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>AI Emergency Helper PRO MAX</title>
-
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Emergency Helper</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
-}
-
 body {
-  background: linear-gradient(135deg, #ff4d4d, #ff9966);
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
   color: white;
-}
-
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 20px;
   text-align: center;
 }
 
-h1 {
-  margin-bottom: 15px;
+.container {
+  margin-top: 10%;
 }
 
-.section {
-  margin: 20px 0;
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
 }
 
 button {
-  padding: 12px 18px;
-  margin: 8px;
+  padding: 12px 20px;
+  margin: 10px;
   border: none;
   border-radius: 10px;
+  background: #ff4b5c;
+  color: white;
+  font-size: 16px;
   cursor: pointer;
-  font-size: 15px;
   transition: 0.3s;
 }
 
-.main-btn {
-  background: white;
-  color: #ff4d4d;
-  font-weight: bold;
+button:hover {
+  background: #ff1e3c;
 }
 
-.main-btn:hover {
-  transform: scale(1.05);
-}
-
-.emergency-btn {
-  background: rgba(255,255,255,0.2);
-  color: white;
-}
-
-.emergency-btn:hover {
-  background: white;
-  color: #ff4d4d;
-}
-
-.card {
-  background: white;
-  color: black;
-  padding: 15px;
-  margin-top: 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-#timer {
-  font-size: 22px;
-  font-weight: bold;
-  color: #ff4d4d;
-}
-
-.footer {
-  margin-top: 30px;
-  font-size: 14px;
-  opacity: 0.8;
+#status {
+  margin-top: 20px;
+  font-size: 18px;
 }
 </style>
-
 </head>
 
 <body>
 
 <div class="container">
-
   <h1>🚨 AI Emergency Helper</h1>
-  <p>Instant help when every second matters</p>
+  <p>Your smart safety assistant</p>
 
-  <div class="section">
-    <button class="main-btn" onclick="startListening()">🎤 Speak Emergency</button>
-  </div>
+  <button onclick="startListening()">🎤 Start Voice</button>
+  <button onclick="triggerEmergency()">🚨 Emergency Alert</button>
 
-  <div class="section">
-    <button class="emergency-btn" onclick="handleEmergency('accident')">🚗 Accident</button>
-    <button class="emergency-btn" onclick="handleEmergency('heart')">❤️ Heart Attack</button>
-    <button class="emergency-btn" onclick="handleEmergency('fire')">🔥 Fire</button>
-    <button class="emergency-btn" onclick="handleEmergency('snake')">🐍 Snake Bite</button>
-  </div>
-
-  <div id="result"></div>
-
-  <div class="card">
-    📞 <b>Emergency Numbers (India)</b><br><br>
-    Ambulance: 108<br>
-    Police: 100<br>
-    Fire: 101
-  </div>
-
-  <div class="card">
-    ⏱️ CPR Timer: <span id="timer">0</span> sec
-  </div>
-
-  <div class="card">
-    <a href="tel:108">
-      <button class="main-btn">📞 Call Ambulance</button>
-    </a>
-  </div>
-
-  <div class="card">
-    <button onclick="shareLocation()">📍 Share My Location</button>
-  </div>
-
-  <div class="footer">
-    Built for saving lives ❤️
-  </div>
-
+  <div id="status">Status: Ready</div>
 </div>
 
 <script>
 
-// ⏱️ Timer
-let timer = 0;
-let interval;
+// 🎤 Voice Recognition
+function startListening() {
+  const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "en-US";
 
-function startTimer() {
-  timer = 0;
-  clearInterval(interval);
-  interval = setInterval(() => {
-    timer++;
-    document.getElementById("timer").innerText = timer;
-  }, 1000);
+  recognition.start();
+  document.getElementById("status").innerText = "Listening...";
+
+  recognition.onresult = function(event) {
+    const text = event.results[0][0].transcript.toLowerCase();
+    document.getElementById("status").innerText = "You said: " + text;
+
+    if (text.includes("help") || text.includes("emergency")) {
+      triggerEmergency();
+    } else {
+      speak("I am here to help you. Stay calm.");
+    }
+  };
 }
 
-// 🔊 Voice Output
-function speak(text) {
-  let speech = new SpeechSynthesisUtterance(text);
+// 🔊 Text to Speech
+function speak(msg) {
+  const speech = new SpeechSynthesisUtterance(msg);
+  speech.lang = "en-US";
   window.speechSynthesis.speak(speech);
 }
 
-// 🎤 Voice Input
-function startListening() {
-  let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-  recognition.lang = "en-US";
+// 🚨 Emergency System
+function triggerEmergency() {
+  speak("Emergency detected. Please respond within 10 seconds.");
+  document.getElementById("status").innerText = "Emergency triggered! Waiting for response...";
 
-  recognition.onresult = function(event) {
-    let speech = event.results[0][0].transcript.toLowerCase();
-
-    if (speech.includes("heart")) handleEmergency("heart");
-    else if (speech.includes("accident")) handleEmergency("accident");
-    else if (speech.includes("fire")) handleEmergency("fire");
-    else if (speech.includes("snake")) handleEmergency("snake");
-    else speak("Sorry, I didn't understand");
-  };
-
-  recognition.start();
+  startCountdown();
 }
 
-// 📍 Location
-function shareLocation() {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(function(position) {
-      let lat = position.coords.latitude;
-      let lon = position.coords.longitude;
-      let link = "https://www.google.com/maps?q=" + lat + "," + lon;
-      window.open(link, "_blank");
-    });
-  } else {
-    alert("Location not supported");
-  }
-}
+// ⏱️ Countdown system
+function startCountdown() {
+  let time = 10;
 
-// ⏱️ No Response Alert
-let responseTimer;
+  const interval = setInterval(() => {
+    document.getElementById("status").innerText =
+      "Respond within " + time + " seconds";
 
-function startResponseTimer() {
-  clearTimeout(responseTimer);
-  responseTimer = setTimeout(() => {
-    let confirmCall = confirm("No response detected! Call ambulance?");
-    if (confirmCall) {
-      window.location.href = "tel:108";
+    time--;
+
+    if (time < 0) {
+      clearInterval(interval);
+      noResponseAction();
     }
-  }, 10000);
+  }, 1000);
 }
 
-// 🧠 Logic
-function handleEmergency(type) {
-  startResponseTimer();
+// 🚨 No response action (safe simulation)
+function noResponseAction() {
+  speak("No response detected. Sending alert notification.");
+  document.getElementById("status").innerText =
+    "⚠️ Alert Sent (Simulation Mode)";
 
-  let message = "";
-
-  if (type === "heart") {
-    startTimer();
-    message = "Start CPR. Push chest 100 to 120 times per minute.";
+  // 📍 Location (browser permission)
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((pos) => {
+      console.log("Location:", pos.coords.latitude, pos.coords.longitude);
+    });
   }
-  else if (type === "accident") {
-    message = "Do not move injured. Call ambulance immediately.";
-  }
-  else if (type === "fire") {
-    message = "Stay low. Exit immediately and use extinguisher.";
-  }
-  else if (type === "snake") {
-    message = "Keep calm. Do not suck venom. Go to hospital.";
-  }
-
-  document.getElementById("result").innerHTML =
-    "<div class='card'>" + message + "</div>";
-
-  speak(message);
 }
 
 </script>
